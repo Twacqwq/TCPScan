@@ -47,7 +47,7 @@ func startPort(host string, start, end int, taskChan chan Task, timeout ...time.
 }
 
 // 端口扫描
-func StartPort(host string) {
+func StartPort(host string, start, end int) {
 	taskChan := make(chan Task, 1024)
 	result := make(chan Task, 10)
 	done := make(chan struct{})
@@ -64,12 +64,12 @@ func StartPort(host string) {
 	go ProcessResult(result)
 
 	go func(start, end int) {
-		for i := start; i < end; i++ {
+		for i := start; i <= end; i++ {
 			endpoint := fmt.Sprintf(host, i)
 			InitTask(endpoint, taskChan)
 		}
 		close(taskChan)
-	}(1, 65535)
+	}(start, end)
 	ProcessResult(result)
 }
 
